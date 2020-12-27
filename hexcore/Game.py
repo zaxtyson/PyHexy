@@ -39,11 +39,9 @@ class Game:
         while not self.judge.has_winner():
             if self.current_turn == self.player1.team:
                 self.player1.let_me_play()
-                # self.board.show_state()
                 self.current_turn = self.player2.team
             elif self.current_turn == self.player2.team:
                 self.player2.let_me_play()
-                # self.board.show_state()
                 self.current_turn = self.player1.team
             self.judge.check_winner()  # 检查棋盘状态
 

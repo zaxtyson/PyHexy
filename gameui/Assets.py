@@ -25,10 +25,8 @@ class Assets:
     # 图像资源
     img_logo = image.load(path.join(image_path, "logo.png"))
     img_start = image.load(path.join(image_path, "start.png"))
-    img_game_over = image.load(path.join(image_path, "game-over-red.png"))
     img_game_win = image.load(path.join(image_path, "game-win.png"))
 
     # 处理过后
     surf_start = transform.smoothscale(img_start, [220, 200])
-    surf_game_over = transform.smoothscale(img_game_over, [200, 200])
     surf_game_win = transform.smoothscale(img_game_win, [200, 200])

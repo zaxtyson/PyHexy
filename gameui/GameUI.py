@@ -148,9 +148,9 @@ class GameUI:
             for piece in self.game.board.items():
                 if piece.hexagon.collidepoint(x, y):  # 玩家选择了一个落子点
                     new_piece = Piece(*piece.hexagon.get_row_col())
-                    if not player.set_piece(new_piece):  # 如果落子成功, 棋盘数据被修改, 后面会自动重绘
-                        print(f"{player.team}: 落子失败 at {x, y} -> {piece.row, piece.col}")  # 落子失败
-                    return None  # 落子成功, 退出循环
+                    if player.set_piece(new_piece):  # 如果落子成功, 棋盘数据被修改, 后面会自动重绘
+                        return
+                    print(f"{player.team}: 落子失败 at {x, y} -> {piece.row, piece.col}")  # 落子失败
 
     def start_game_thread(self):
         """游戏线程"""

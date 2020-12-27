@@ -370,9 +370,13 @@ class MCTS:
 
     def best_move(self) -> Pos:
         """获取最佳下棋位置"""
-        max_value = max(self.root.children, key=lambda n: n.reward).reward
-        max_nodes = [n for n in self.root.children if n.reward == max_value]
-        return choice(max_nodes).move
+        max_value = 0
+        best_choice = None
+        for ch in self.root.children:
+            if ch.reward > max_value:
+                max_value = ch.reward
+                best_choice = ch
+        return best_choice.move
 
     @property
     def tree_node_num(self) -> int:
