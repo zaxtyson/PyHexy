@@ -8,28 +8,10 @@ class Team(Enum):
     BLUE = 1
 
 
-# class Pos:
-#     """位置"""
-#
-#     def __init__(self, row: int, col: int):
-#         self.row = row
-#         self.col = col
-#
-#     def __repr__(self):
-#         return f"{self.row, self.col}"
-#
-#     def __eq__(self, other):
-#         return (self.row, self.col) == (other.row, other.col)
-#
-#     def __hash__(self):
-#         return hash((self.row, self.col))
-
-
 class Piece:
     """棋子"""
 
     def __init__(self, row: int, col: int, team: Team = Team.NONE):
-        # super().__init__(row, col)
         self.row = row
         self.col = col
         self.team = team  # 棋子所属队伍, 默认无
@@ -37,11 +19,6 @@ class Piece:
     def set_team(self, team: Team):
         """设置棋子所属队伍"""
         self.team = team
-
-    # @property
-    # def pos(self):
-    #     """获取棋子坐标"""
-    #     return Pos(self.row, self.col)
 
     def __repr__(self):
         return f"{self.row, self.col, self.team}"
@@ -75,6 +52,7 @@ class Board:
                 yield piece
 
     def state(self):
+        """获取棋盘状态, 返回二维数组"""
         return [[p.team.value for p in row] for row in self]
 
     def set_piece(self, piece: Piece) -> bool:

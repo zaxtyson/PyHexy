@@ -37,14 +37,21 @@ class GameUI:
         pygame.font.init()
         pygame.fastevent.init()
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode([Config.width, Config.height])
-        self.font = pygame.font.SysFont(Config.font_family, Config.font_size)
-        self.game = Game(Config.board_size)
+        self.game = None
         self.game_thread = None
         self.game_started = False  # 游戏开始了吗
 
-    def render_text(self, text: str, x: int, y: int, color: Color) -> pygame.font:
-        """渲染字体"""
+        # 计算游戏框大小
+        # width = (3n-1)*d*cos30, height = (n+1)*d+(n-1)*d*cos60
+        n, d = Config.board_size, Config.hexagon_length
+        self.width = int((3 * n - 1) * d * math.cos(math.pi / 6))
+        self.height = int((n + 1) * d + (n - 1) * d * math.cos(math.pi / 3))
+        self.screen = pygame.display.set_mode([self.width, self.height])
+        self.font = pygame.font.SysFont(Config.font_family, Config.font_size)
+
+    def render_text_center(self, text: str, y: int, color: Color) -> pygame.font:
+        """渲染字体, 在屏幕中心显示"""
+        x = (self.width - Config.font_size / 2 * len(text)) // 2
         text = self.font.render(text, True, color)
         self.screen.blit(text, (x, y))
         return text
@@ -63,9 +70,9 @@ class GameUI:
     def draw_welcome_ui(self):
         """游戏欢迎界面"""
         self.screen.fill(Colors.WHITE)  # 设置背景颜色
-        self.render_text("[ Hex Game ]", 280, 100, Colors.BLACK)
+        self.render_text_center("[ Hex Game ]", self.height // 5, Colors.BLACK)
         surf_start_rect = Assets.surf_start.get_rect()  # 开始游戏图片对应的矩形
-        surf_start_rect.move_ip(Config.width / 2.8, Config.height - 200)  # 移动矩形到屏幕底下
+        surf_start_rect.move_ip((self.width - Assets.surf_start.get_width()) / 2, self.height - 200)  # 移动矩形到屏幕底下
         self.screen.blit(Assets.surf_start, surf_start_rect)
 
         # 点击开始进入游戏
@@ -74,6 +81,9 @@ class GameUI:
                 x, y = pygame.mouse.get_pos()
                 if surf_start_rect.collidepoint(x, y):
                     self.game_started = True
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit(0)
 
     def draw_game_board(self):
         """游戏棋盘界面"""
@@ -83,13 +93,13 @@ class GameUI:
         rect_width = (2 * n - 1) * d * math.cos(math.pi / 6)  # 上下矩形的宽度
         rect_height = d * math.sin(math.pi / 6)  # 上下矩形的高度
         bt_rect_start_x = n * d * math.cos(math.pi / 6)  # 底部矩形的起点 x 坐标
-        bt_rect_start_y = Config.height - rect_height  # 底部矩形的起点 y 坐标
+        bt_rect_start_y = self.height - rect_height  # 底部矩形的起点 y 坐标
         # 左右先画, 防止覆盖上下矩形部分区域
-        pygame.draw.rect(self.screen, Colors.BLUE, [0, rect_height, bt_rect_start_x, Config.height])  # 左侧矩形
-        pygame.draw.rect(self.screen, Colors.BLUE, [rect_width, 0, Config.width, Config.height])  # 右侧背景
+        pygame.draw.rect(self.screen, Colors.BLUE, [0, rect_height, bt_rect_start_x, self.height])  # 左侧矩形
+        pygame.draw.rect(self.screen, Colors.BLUE, [rect_width, 0, self.width, self.height])  # 右侧背景
         pygame.draw.rect(self.screen, Colors.RED, [0, 0, rect_width, rect_height])  # 上方矩形
         pygame.draw.rect(self.screen, Colors.RED,
-                         [bt_rect_start_x, bt_rect_start_y, Config.width, Config.height])  # 下方矩形
+                         [bt_rect_start_x, bt_rect_start_y, self.width, self.height])  # 下方矩形
         # 画出棋盘
         for row in range(Config.board_size):
             for col in range(Config.board_size):
@@ -104,8 +114,8 @@ class GameUI:
         """赢了"""
         win_team = self.game.judge.get_winner_team()
         self.screen.fill(Colors.WHITE)
-        self.screen.blit(Assets.surf_game_win, [Config.width / 3, Config.height / 6])
-        self.render_text(f"Winner: {win_team}", 200, 400, Colors.BLACK)
+        self.screen.blit(Assets.surf_game_win, [(self.width - Assets.surf_game_win.get_width()) / 2, self.height / 6])
+        self.render_text_center(f"Winner: {win_team}", self.height - 100, Colors.BLACK)
 
     def draw_winner_path(self):
         """高亮胜利者路线"""
@@ -161,6 +171,7 @@ class GameUI:
             p1 = AI(Team.BLUE)
             p2 = AI(Team.RED)
 
+        self.game = Game(Config.board_size)
         self.game.set_player_one(p1)
         self.game.set_player_two(p2)
         self.game_thread = Thread(target=self.game.start)

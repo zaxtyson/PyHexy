@@ -48,9 +48,9 @@ class AI(Player):
 
     def let_me_play(self):
         mcts = MCTS(self.board.state(), self.team.value)
+        print(f"[AI] {self.team} searching in {self.level}s...", end='')
         mcts.search(Config.ai_level)
         row, col = mcts.best_move()
         self.set_piece(Piece(row, col))
-
-        simulate_count, node_count, run_time = mcts.statistics
-        print(f"[AI] {self.team} set piece at ({row}, {col}) | {simulate_count=}, {node_count=}, {run_time=}")
+        simulate_times, node_count, run_time = mcts.statistics
+        print(f"\r[AI] {self.team} set piece at ({row}, {col})\t| {simulate_times=}, {node_count=}, {run_time=}")

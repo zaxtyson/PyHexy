@@ -1,11 +1,12 @@
 from os import path
+
 from pygame import image, transform, Color
 
 
 class Colors:
     """一些颜色常量"""
 
-    WHITE = Color("#FFFFF3")
+    WHITE = Color("#FFFFFF")
     BLACK = Color("#6E7783")
     RED = Color("#E53A40")
     BLUE = Color("#30A9DE")
@@ -28,6 +29,6 @@ class Assets:
     img_game_win = image.load(path.join(image_path, "game-win.png"))
 
     # 处理过后
-    surf_start = transform.smoothscale(img_start, [200, 200])
-    surf_game_over = transform.smoothscale(img_game_over, [300, 300])
-    surf_game_win = transform.smoothscale(img_game_win, [300, 300])
+    surf_start = transform.smoothscale(img_start, [220, 200])
+    surf_game_over = transform.smoothscale(img_game_over, [200, 200])
+    surf_game_win = transform.smoothscale(img_game_win, [200, 200])
