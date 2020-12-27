@@ -350,15 +350,9 @@ class MCTS:
             winner = state.get_winner()
             if winner != NoneTeam:
                 return winner
-            try:
-                move = choice(moves)
-                state.set_piece(move)
-                moves.remove(move)
-            except Exception as e:
-                print(e)
-                state.print()
-                print(state.get_moves())
-                input("!" * 100)
+            move = choice(moves)
+            state.set_piece(move)
+            moves.remove(move)
 
     def back_propagate(self, node: Node, winner: int):
         """从给定结点反向传播, 更新其父节点信息"""
@@ -370,12 +364,9 @@ class MCTS:
 
     def best_move(self) -> Pos:
         """获取最佳下棋位置"""
-        max_value = 0
-        best_choice = None
-        for ch in self.root.children:
-            if ch.reward > max_value:
-                max_value = ch.reward
-                best_choice = ch
+        max_reward = max(ch.reward for ch in self.root.children)  # 最大的 reward 值
+        max_reward_chs = [ch for ch in self.root.children if ch.reward == max_reward]  # reward 值最大的结点
+        best_choice = max(max_reward_chs, key=lambda ch: ch.visits)  # 如果有 reward 相同的, 选 visits 最大的
         return best_choice.move
 
     @property
